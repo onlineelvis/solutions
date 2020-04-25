@@ -55,17 +55,14 @@ echo maxProfit($array) . PHP_EOL;
 echo maxProfit($array2) . PHP_EOL;
 
 
-function stringCost(string $a, string $b, int $insertionCost, int $deletionCost, int $replacementCost)
+// ==================================
+function stringCost(string $a, string $b, int $insertionCost, int $deletionCost, int $replacementCost):int
 {
     $insert = 0;
-    $insertPlus = 0;
-    $deleteReplace = 0;
 
     $delete = 0;
-    $deletePlus = 0;
 
     $replace = 0;
-    $insertReplace = 0;
 
     $lenA = strlen($a);
     $lenB = strlen($b);
@@ -75,11 +72,11 @@ function stringCost(string $a, string $b, int $insertionCost, int $deletionCost,
 
     $maxLen = max($lenB, $lenA);
 
-    if ($lenA < $lenB && $replacementCost <= $insertionCost + $deletionCost) {
+    $cost = 0;
 
-        $insertReplace = $lenB - $lenA;
 
-        var_dump($insertReplace);
+    if ($lenA === $lenB && $replacementCost <= $insertionCost + $deletionCost) {
+
 
         for ($i = 0; $i < $maxLen-1; $i++) {
 
@@ -88,39 +85,59 @@ function stringCost(string $a, string $b, int $insertionCost, int $deletionCost,
             }
 
         }
+
+        $replacementCost === 0 ? $replacementCost +=1: $replacementCost;
+        $cost = $replace * $replacementCost;
+    }
+
+    if ($lenA < $lenB && $replacementCost <= $insertionCost + $deletionCost) {
+
+        $insertReplace = $lenB - $lenA;
+
+        for ($i = 0; $i < $maxLen-1; $i++) {
+
+            if ($splitA[$i] !== $splitB[$i]) {
+                $replace++;
+            }
+
+        }
+
+        $replacementCost === 0 ? $replacementCost += 1: $replacementCost;
+        $cost = ($replace + $insertReplace) * $replacementCost;
     }
 
     if ($lenA > $lenB && $replacementCost <= $insertionCost + $deletionCost) {
 
         $deleteReplace = $lenA - $lenB;
 
+
         for ($i = 0; $i < $maxLen-1; $i++) {
 
             if ($splitA[$i] !== $splitB[$i]) {
                 $replace++;
             }
-
         }
+
+        $cost = ($replace + $deleteReplace) * $replacementCost;
     }
 
     if ($lenA > $lenB && $replacementCost > $insertionCost + $deletionCost) {
 
         $deletePlus = $lenA - $lenB;
 
-        for ($i = 0; $i < $maxLen - 1; $i++) {
 
-            if ($lenB === $lenA) {
+        for ($i = 0; $i < $maxLen - 1; $i++) {
 
                 if ($splitA[$i] !== $splitB[$i]) {
                     $delete++;
                     $insert++;
-                }
             }
         }
+
+        $cost = (($delete + $deletePlus) * $deletionCost) + ($insert * $insertionCost);
     }
 
     if ($lenA < $lenB && $replacementCost > $insertionCost + $deletionCost) {
-
 
         $insertPlus = $lenB - $lenA;
 
@@ -131,23 +148,33 @@ function stringCost(string $a, string $b, int $insertionCost, int $deletionCost,
                 $insert++;
             }
         }
+
+        $cost = (($insert + $insertPlus) * $insertionCost) + ($delete * $deletionCost);
     }
 
-    // one more if stamen
+    if ($lenA === $lenB && $replacementCost > $insertionCost + $deletionCost) {
 
-  $replacementCostValidated = $replacementCost === 0 ?? $replacementCost += 1;
-  $insertionCostValidated = $insertionCost === 0 ?? $insertionCost += 1;
-  $deletionCostValidated = $deletionCost === 0 ?? $deletionCost += 1;
 
-  var_dump($delete);
+        for ($i = 0; $i < $maxLen; $i++) {
 
-    return (($insert + $insertPlus) * $insertionCost) + (($delete + $deletePlus) * ($deletionCost+1)) + ($replace + $insertReplace + $deleteReplace) * $replacementCost;
-// fix multiplication with 0
+            if ($splitA[$i] !== $splitB[$i]) {
+
+                $delete++;
+                $insert++;
+            }
+        }
+        $cost = ($insert * $insertionCost) + ($delete * $deletionCost);
+    }
+    return $cost;
 }
 
-echo 'Answer ' . stringCost('a', 'A', 1, 0, 2) . PHP_EOL;
+echo stringCost('bitten', 'meeting', 1, 1, 1) . PHP_EOL;
+echo stringCost('bitten', 'meeting', 2, 3, 6) . PHP_EOL;
+echo stringCost('', 'A', 1, 0, 0) . PHP_EOL;
+echo stringCost('a', 'A', 1, 1, 0) . PHP_EOL;
+echo stringCost('a', 'A', 1, 0, 2) . PHP_EOL;
 
-//=====================================================
+//=============================================================
 // [1, 4, 7, 8, 13] =>  [1, 1, 4, 4, 7]
 // [1] = > 1
 // [1, 4] = > 1
